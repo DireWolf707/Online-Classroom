@@ -4,5 +4,5 @@ from django.utils.translation import gettext_lazy as _
 
 
 class CustomUser(AbstractUser):
-    email = models.EmailField(_('email address'))
+    email = models.EmailField(_('email address'), unique=True)
     is_teacher = models.BooleanField(_('Are You a Teacher'), default=False)
