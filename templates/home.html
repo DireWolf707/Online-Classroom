@@ -1,17 +1,49 @@
 {% extends 'base.html' %}
-
+{% load crispy_forms_tags %}
 {% block title %}Home{% endblock title %}
 {% block content %}
-{% if user.is_authenticated %}
-  Hi {{ user.username }}!
-  <p><a href="{% url 'logout' %}">Log Out</a></p>
-  <hr>
-  {% for classroom in classrooms %}
-  {{classroom.name}}
-  {% empty %}No classroom joined so far...{% endfor %}
+
+{% if user.is_teacher %}
+<button type="button" class="btn btn-primary position-absolute top-0 end-0" data-bs-toggle="modal"
+  data-bs-target="#myModal">
+  Create Classroom
+</button>
 {% else %}
-  <p>You are not logged in</p>
-  <a href="{% url 'login' %}">Log In</a> |
-  <a href="{% url 'signup' %}">Sign Up</a>
-  {% endif %}
+<button type="button" class="btn btn-primary position-absolute top-0 end-0" data-bs-toggle="modal" data-bs-target="#myModal">
+  Join Classroom
+</button>
+{% endif %}
+<br><br>
+
+<div class="row gy-2 mb-3">
+{% for classroom in classrooms %}
+<div class="col-4"><div class="card text-center">
+  <div class="card-body">
+    <h5 class="card-title">{{classroom.name}}</h5>
+    {% if user.is_teacher %}Code:<p class="card-text">{{classroom.code}}</p>{% else %}Teacher:<p class="card-text">{{classroom.teacher}}</p>{% endif %}
+    <a href="#" class="btn btn-primary">Enter Classroom</a>
+  </div>
+</div></div>
+{% empty %}{% if user.is_teacher %}No classroom created so far... {% else %}No classroom joined so far...{% endif %}{% endfor %}</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="myModalLabel">Modal title</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form method='POST' action='{% if user.is_teacher %}{% url "create_class" %}{% else %}{% url "join_class" %}
+        {% endif %}'>
+          {% csrf_token %}
+          {{form|crispy}}
+          <button type="submit" class="btn btn-primary mt-2">Create</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock content %}
