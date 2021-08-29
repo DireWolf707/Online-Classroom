@@ -1,0 +1,17 @@
+{% load crispy_forms_tags %}
+
+<div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="myModalLabel">{{submission_model.title}}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="{% if submission_id %}{% url 'submission_update' model_name model_id submission_id %}{% else %}{% url 'submission_create' model_name model_id %}{% endif %}" method="post">
+        {% csrf_token %}
+        {{form|crispy}}
+         <div class="d-grid">
+        <button type="submit" class="btn btn-{% if submission_id %}danger{% else %}primary{% endif %} mt-3">{% if submission_id %}Resubmit{% else %}Submit{% endif %}</button>
+        </div>
+        </form>
+      </div>
+    </div>

@@ -21,7 +21,7 @@
   <div class="card-body">
     <h5 class="card-title">{{classroom.name}}</h5>
     {% if user.is_teacher %}Code:<p class="card-text">{{classroom.code}}</p>{% else %}Teacher:<p class="card-text">{{classroom.teacher}}</p>{% endif %}
-    <a href="#" class="btn btn-primary">Enter Classroom</a>
+    <a href="{{classroom.get_absolute_url}}" class="btn btn-primary">Enter Classroom</a>
   </div>
 </div></div>
 {% empty %}{% if user.is_teacher %}No classroom created so far... {% else %}No classroom joined so far...{% endif %}{% endfor %}</div>
@@ -32,7 +32,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="myModalLabel">Modal title</h5>
+        <h5 class="modal-title" id="myModalLabel">Classroom</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">

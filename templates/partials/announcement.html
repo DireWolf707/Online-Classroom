@@ -1,0 +1,14 @@
+<div class="card mt-2">
+  <div class="card-header fs-4">
+    {{stream_obj.title}}&nbsp({{type}})
+  </div>
+  <div class="card-body">
+    <p class="fs-5">{{stream_obj.text}}</p>
+    <div class="d-flex justify-content-end fs-6 fw-lighter fst-italic">
+      <b>created</b> - {{stream_obj.created}} 
+      {% if stream_obj.created != stream_obj.updated %}
+      &nbsp<b>updated</b> - {{stream_obj.updated}}
+      {% endif %}
+    </div>
+  </div>
+</div>

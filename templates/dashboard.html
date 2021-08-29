@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% load stream %}
+{% block title %}Dashboard{% endblock title %}
+{% block content %}
+<div class="row mb-2">
+  <div class="col-3 fs-4 fw-bold">
+    <a style="text-decoration:none" href="{% url 'dashboard' classroom.code %}">{{classroom.name}}</a>
+  </div>
+  <div class="col-9">
+    {% if user.is_teacher %}
+    <div class="row">
+      <div class="col-5 fs-4 fw-bold">&nbsp&nbspStream</div>
+      <div class="col-7">
+        <div class="d-flex justify-content-evenly">
+          <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#myModal"
+            hx-get="{% url 'stream_create' classroom.code 'assignment' %}" hx-trigger="click" hx-target=".modal-dialog"
+            hx-swap="innerHTML">
+            + Assignment
+          </button>
+          <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#myModal"
+            hx-get="{% url 'stream_create' classroom.code 'announcement' %}" hx-trigger="click"
+            hx-target=".modal-dialog" hx-swap="innerHTML">
+            + Announcement
+          </button>
+          <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#myModal"
+            hx-get="{% url 'stream_create' classroom.code 'test' %}" hx-trigger="click" hx-target=".modal-dialog"
+            hx-swap="innerHTML">
+            + Test
+          </button>
+        </div>
+      </div>
+    </div>
+    {% else %}
+    <div class='fs-4 fw-bold'>Stream</div>
+    {% endif %}
+  </div>
+</div>
+<div class="row">
+  <div class="col-3">
+    <div class="row mb-2">
+      <ul class="list-group list-group">
+        <li class="list-group-item">See All Assignments</li>
+        <li class="list-group-item">See All Tests</li>
+      </ul>
+    </div>
+    <div class="row px-2 py-2">
+    Test {% if user.is_teacher %}(Assigned){% else %}(Upcoming){% endif %}
+      <ul class="list-group list-group px-2 py-2">
+        {% for test in upcoming_tests %}
+        <li class="list-group-item">
+        <a type="button" style="text-decoration:none;color: #000000" data-bs-toggle="modal" data-bs-target="#myModal"
+          hx-get="{% if user.is_teacher %}{% url 'stream_update' classroom.code 'test' test.id %}{% else %}{% url 'submission_create' 'test' test.id %}{% endif %}" hx-trigger="click"
+          hx-target=".modal-dialog" hx-swap="innerHTML">{{test.title}}</a>
+        </li>
+        {% empty %}No {% if user.is_teacher %}Assigned{% else %}Upcoming{% endif %} Test...{% endfor %}
+      </ul>
+    Assignment {% if user.is_teacher %}(Assigned){% else %}(Upcoming){% endif %}
+      <ul class="list-group list-group px-2 py-2">
+        {% for assignment in upcoming_assignments %}
+        <li class="list-group-item">
+        <a type="button" style="text-decoration:none;color: #000000" data-bs-toggle="modal" data-bs-target="#myModal"
+          hx-get="{% if user.is_teacher %}{% url 'stream_update' classroom.code 'assignment' assignment.id %}{% else %}{% url 'submission_create' 'assignment' assignment.id %}{% endif %}" hx-trigger="click"
+          hx-target=".modal-dialog" hx-swap="innerHTML">{{assignment.title}}</a>
+        </li>
+        {% empty %}No {% if user.is_teacher %}Assigned{% else %}Upcoming{% endif %} Assignment...{% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="col-9">
+    {% for stream in streams %}
+    {% with stream.stream_obj as stream_obj %}
+    {{stream_obj.render}}
+    {% with stream_obj|model_name as type %}
+    <div class='d-flex justify-content-end'>
+      {% if user.is_teacher %}
+      <div class="btn-group mb-2" role="group">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal"
+          hx-get="{% url 'stream_update' classroom.code type stream_obj.id %}" hx-trigger="click"
+          hx-target=".modal-dialog" hx-swap="innerHTML">Edit</button>
+        <form action="{% url 'stream_delete' stream.id  %}" method="POST">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+      </div>
+      {% else %}
+      {% if type != 'announcement' %}
+      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal"
+          hx-get="{% url 'stream_detail' type stream_obj.id %}" hx-trigger="click"
+          hx-target=".modal-dialog" hx-swap="innerHTML">Select</button>
+      {% endif %}
+      {% endif %}
+    </div>
+    {% endwith %}
+    {% endwith %}
+    {% empty %}Nothing in the stream ...{% endfor %}
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+  </div>
+</div>
+{% endblock content %}
